@@ -2,15 +2,13 @@ package com.dailycodebuffer.OrderService.controller;
 
 
 import com.dailycodebuffer.OrderService.model.OrderRequest;
+import com.dailycodebuffer.OrderService.model.OrderResponse;
 import com.dailycodebuffer.OrderService.services.OrderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
@@ -27,4 +25,11 @@ public class OrderController {
         log.info("Order placed successfully with order id: {}", orderId);
         return new ResponseEntity<>(orderId, HttpStatus.OK);
     }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrderDetails(@PathVariable long orderId) {
+        log.info("Getting order details for order id: {}", orderId);
+        OrderResponse orderResponse = orderService.getOrderDetails(orderId);
+        log.info("Order details retrieved successfully for order id: {}", orderId);
+        return new ResponseEntity<>(orderResponse, HttpStatus.OK); }
 }
