@@ -8,9 +8,11 @@ import com.dailycodebuffer.OrderService.external.request.PaymentRequest;
 import com.dailycodebuffer.OrderService.model.OrderRequest;
 import com.dailycodebuffer.OrderService.model.OrderResponse;
 import com.dailycodebuffer.OrderService.repository.OrderRepository;
+import com.dailycodebuffer.ProductService.model.ProductResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 
@@ -26,6 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
 
     @Override
@@ -74,11 +79,23 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId).
                 orElseThrow(() -> new CustomException("Order not found with id: " + orderId,"NOT_FOUND", 404));
 
+        log.info("Invoking Product service to fetch product details for product id: {}", order.getProductId());
+        ProductResponse productResponse =
+                restTemplate.getForObject("http://PRODUCT-SERVICE/products/" + order.getProductId(), ProductResponse.class);
+
+        OrderResponse.ProductDetails productDetails = OrderResponse.ProductDetails.builder()
+                .productId(productResponse.getProductId())
+                .productName(productResponse.getProductName())
+                .price(productResponse.getPrice())
+                .quantity(productResponse.getQuantity())
+                .build();
+
         OrderResponse orderResponse = OrderResponse.builder()
                 .orderId(order.getId())
                 .orderDate(order.getOrderDate())
                 .orderStatus(order.getOrderStatus())
                 .amount(order.getAmount())
+                .productDetails(productDetails)
                 .build();
 
         return orderResponse;
