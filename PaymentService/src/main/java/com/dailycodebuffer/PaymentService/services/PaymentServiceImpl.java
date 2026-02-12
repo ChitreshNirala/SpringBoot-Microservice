@@ -2,7 +2,9 @@ package com.dailycodebuffer.PaymentService.services;
 
 
 import com.dailycodebuffer.PaymentService.entity.TransactionDetails;
+import com.dailycodebuffer.PaymentService.model.PaymentMode;
 import com.dailycodebuffer.PaymentService.model.PaymentRequest;
+import com.dailycodebuffer.PaymentService.model.PaymentResponse;
 import com.dailycodebuffer.PaymentService.repository.TransactionDetailsRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +33,22 @@ public class PaymentServiceImpl implements PaymentService {
         transactionDetailsRepository.save(transactionDetails);
         log.info("Payment details recorded successfully with id: {}", transactionDetails.getId());
         return transactionDetails.getId();
+    }
+
+    @Override
+    public PaymentResponse getPaymentDetailsByOrderId(String orderId) {
+        log.info("Getting payment details for order id: {}", orderId);
+        TransactionDetails transactionDetails =
+                transactionDetailsRepository.findByOrderId(Long.parseLong(orderId));
+        PaymentResponse paymentResponse = PaymentResponse.builder()
+                .paymentId(transactionDetails.getId())
+                .paymentMode(PaymentMode.valueOf(transactionDetails.getPaymentMode()))
+                .paymentDate(transactionDetails.getPaymentDate())
+                .status(transactionDetails.getPaymentStatus())
+                .amount(transactionDetails.getAmount())
+                .orderId(transactionDetails.getOrderId())
+                .build();
+
+        return paymentResponse;
     }
 }
