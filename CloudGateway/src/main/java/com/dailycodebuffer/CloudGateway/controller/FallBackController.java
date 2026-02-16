@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class FallBackController {
 
-    @GetMapping("/orderServiceFallBack")
+    @GetMapping("/orderServiceFallback")
     public String orderServiceFallBackMethod() {
         return "Order Service is down.";
     }

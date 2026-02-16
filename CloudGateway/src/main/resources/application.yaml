@@ -20,6 +20,10 @@ spring:
               args:
                 name: ORDER-SERVICE
                 fallbackUri: forward:/orderServiceFallback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
         - id: PAYMENT-SERVICE
           uri: lb://PAYMENT-SERVICE
           predicates:
@@ -29,6 +33,10 @@ spring:
               args:
                 name: PAYMENT-SERVICE
                 fallbackUri: forward:/paymentServiceFallback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
 
         - id: PRODUCT-SERVICE
           uri: lb://PRODUCT-SERVICE
@@ -39,4 +47,8 @@ spring:
               args:
                 name: PRODUCT-SERVICE
                 fallbackUri: forward:/productServiceFallback
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
 
